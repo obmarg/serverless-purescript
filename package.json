@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/obmarg/serverless-purescript/issues"
   },
-  "homepage": "https://github.com/obmarg/serverless-purescript#readme"
+  "homepage": "https://github.com/obmarg/serverless-purescript#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "lodash": "^4.17.4",
+    "mkdirp": "^0.5.1"
+  }
 }
