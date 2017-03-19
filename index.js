@@ -14,14 +14,27 @@ class Purescript {
     this.serverless = serverless;
     this.options = options;
 
+    _.bindAll(this, ['compile', 'cleanup', 'offlineCompile', 'doCompile']);
+    this.doCompile = bluebird.coroutine(this.doCompile);
+    this.cleanup = bluebird.coroutine(this.cleanup);
+
     this.hooks = {
-      'before:deploy:createDeploymentArtifacts': this.compile.bind(this),
-      'after:deploy:createDeploymentArtifacts': bluebird.coroutine(
-        this.cleanup.bind(this)
-      )
+      'before:deploy:createDeploymentArtifacts': this.compile,
+      'after:deploy:createDeploymentArtifacts': this.cleanup,
+
+      // Add some hooks to let us work with serverless-offline.
+      'before:offline:start': this.offlineCompile,
+      'before:offline:start:init': this.offlineCompile,
+      'before:offline:start:end': this.cleanup
     };
 
-    this.doCompile = bluebird.coroutine(this.doCompile.bind(this));
+  }
+
+  offlineCompile() {
+    process.on('SIGINT', () => {
+      this.cleanup();
+    });
+    this.compile();
   }
 
   compile() {
