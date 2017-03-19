@@ -19,8 +19,13 @@ class Purescript {
     this.cleanup = bluebird.coroutine(this.cleanup);
 
     this.hooks = {
+      // Build as part of a normal deploy
       'before:deploy:createDeploymentArtifacts': this.compile,
       'after:deploy:createDeploymentArtifacts': this.cleanup,
+
+      // Build as part of a function only deploy
+      'after:deploy:function:packageFunction': this.compile,
+      'after:deploy:function:deploy': this.cleanup,
 
       // Add some hooks to let us work with serverless-offline.
       'before:offline:start': this.offlineCompile,
