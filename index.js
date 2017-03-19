@@ -39,7 +39,7 @@ class Purescript {
     process.on('SIGINT', () => {
       this.cleanup();
     });
-    this.compile();
+    return this.compile();
   }
 
   compile() {
