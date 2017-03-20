@@ -24,8 +24,8 @@ class Purescript {
       'after:deploy:createDeploymentArtifacts': this.cleanup,
 
       // Build as part of a function only deploy
-      'after:deploy:function:packageFunction': this.compile,
-      'after:deploy:function:deploy': this.cleanup,
+      'before:deploy:function:packageFunction': this.compile,
+      'after:deploy:function:packageFunction': this.cleanup,
 
       // Add some hooks to let us work with serverless-offline.
       'before:offline:start': this.offlineCompile,
@@ -69,23 +69,15 @@ class Purescript {
 
     const modules = _.uniq(_.map(functions, 'module'));
 
-    // Now lets replace the serverless handlers w/ the correct data.
-    this.serverless.service.functions = _.fromPairs(_.map(
-      this.serverless.service.functions,
-      (func, key) => {
-        if (!func.purescript) {
-          return [key, func];
-        }
-        return [
-          key,
-          _.extend({}, func, {"handler": `purescript.${key}`})
-        ];
-      }
-    ));
-
     if (functions.length == 0) {
       return null;
     }
+
+    // Now lets replace the serverless handlers w/ the correct data.
+    _.map(functions, ({name}) => {
+      // Ugh mutation :(
+      this.serverless.service.functions[name].handler = `purescript.${name}`;
+    });
 
     return this.doCompile(modules, functions, debugMode);
   }
