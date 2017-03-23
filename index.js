@@ -128,7 +128,7 @@ module ServerlessPurescriptHandlers where
 
 import Prelude
 import Serverless.AWS (Lambda)
-import Serverless.AWS.Runner (Lambda, exposeLambda, runLambda)
+import Serverless.AWS.Runner (exposeLambda, runLambda)
 import Main (Effects)
 <% _.forEach(modules, function (module) { %>
 import <%= module %> as <%= module %>
